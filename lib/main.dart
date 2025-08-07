@@ -4,20 +4,12 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:project_managment_fb/controllers/user_controller.dart';
 import 'package:project_managment_fb/views/AddTeam.dart';
-import 'package:project_managment_fb/views/TaskViewFB.dart';
 import 'package:project_managment_fb/views/offline_page.dart';
 import 'package:project_managment_fb/views/splash_page.dart';
-import 'InternetServices/InternetServices.dart';
 import 'views/login_page.dart';
 import 'views/sign_up.dart';
 import 'views/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-
-
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -77,7 +69,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/login', page: ()=> const LoginPage()),
         GetPage(name: '/home', page: ()=> const HomePage()),
-        GetPage(name: '/signup', page:()=> const SignUp()),
+        GetPage(name: '/signup', page:()=> SignUp()),
         GetPage(name: '/addTeam', page:()=> AddTeamPage()),
         GetPage(name: '/', page:()=> const SplashPage()),
         GetPage(name: '/offlinepage', page:()=> OfflinePage()),

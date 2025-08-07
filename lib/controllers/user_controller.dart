@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 class UserController extends GetxController {
 
   final RxList<User> _user =<User>[].obs;
+  final RxBool isRegistered = false.obs;   // GETX USED //
 
  /* static final UserController _instance = UserController._internal();
   final List<User> _user = [];
