@@ -98,7 +98,6 @@ class TaskController extends ChangeNotifier {
 
     return true;
   }
-
   Future<bool> isTaskValid(Task task) async {
     final project = await _dbHelper.getProjectById(task.projectid);
     if (project == null) return false;

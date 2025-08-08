@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:project_managment_fb/collection/Task_collection.dart';
 import 'package:project_managment_fb/views/TaskViewFB.dart';
 import '../models/project_model.dart';
@@ -141,14 +143,14 @@ class _TasksPageState extends State<TasksPage> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Get.back(),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                 onPressed: () async {
             final ok = await _saveTask(context);
             if (ok) {
-            Navigator.of(context).pop();
+           Get.back();
             setState(() {});
             }
             },
@@ -241,6 +243,7 @@ class _TasksPageState extends State<TasksPage> {
               ),
             ),
           );
+
         },
       ),
     );

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:project_managment_fb/collection/Task_collection.dart';
 import 'package:project_managment_fb/collection/project_collection.dart';
 import 'package:project_managment_fb/collection/team_collection.dart';
@@ -30,12 +32,12 @@ class _HomePageState extends State<HomePage> {
   late Project project;
   late Task task;
   List<Team> _teamList = [];
-
   Future<void>_logout(BuildContext context) async
   {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false);
-    Navigator.pushReplacementNamed(context,'/login');
+    /*Navigator.pushReplacementNamed(context,'/login');*/
+    Get.offNamed('/login');
   }
   get flutterLocalNotificationsPlugin => null;
   @override
@@ -44,14 +46,14 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     fetchTeam();
   }
-  Future<void> fetchTeam() async
+  */
+/*  Future<void> fetchTeam() async
   {
     final teams = await DatabaseHelper().getAllTeams();
     setState(()=>_teamList=teams);
   }
-
-
-  Future<void> fetchTeam() async {
+  */
+/*  Future<void> fetchTeam() async {
     final snapshot = await FirebaseFirestore.instance.collection('teams').get();
     final teams = snapshot.docs.map((doc) {
       final data = doc.data();
@@ -66,8 +68,8 @@ class _HomePageState extends State<HomePage> {
     }).toList();
 
     setState(() => _teamList = teams);
-  }
-  Future<void> deleteTeamFromFirestore(String email) async {
+  }*/
+/*  Future<void> deleteTeamFromFirestore(String email) async {
     final query = await FirebaseFirestore.instance
         .collection('teams')
         .where('email', isEqualTo: email)
@@ -189,7 +191,6 @@ class _HomePageState extends State<HomePage> {
   }
   */   //buildlistview
   @override
-  @override
   void initState() {
     super.initState();
     _checkConnectivity();
@@ -248,11 +249,11 @@ class _HomePageState extends State<HomePage> {
                     content: const Text("Are you sure you want to delete?"),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.pop(context, false),
+                        onPressed: () => Get.back(result: false),
                         child: const Text('No'),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.pop(context, true),
+                        onPressed: () => Get.back(result: true),
                         child: const Text('Yes'),
                       ),
                     ],
@@ -260,10 +261,11 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               onDismissed: (direction) async {
-                await FirebaseFirestore.instance
+                /*await FirebaseFirestore.instance
                     .collection('teams')
                     .doc(team.id)
-                    .delete();
+                    .delete(); */
+                await deleteTeam(team.id);
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -306,12 +308,13 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                   onTap: () {
-                    Navigator.push(
+                   /* Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => ProjectPage(team: team),
                       ),
-                    );
+                    );*/
+                    Get.to(() => ProjectPage(team: team));
                   },
                 ),
               ),
@@ -392,8 +395,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(onPressed: ()
        async {
-        Navigator.pushNamed(context, '/addTeam');
-      },
+         Get.toNamed('/addTeam');
+       },
       backgroundColor: Colors.purple[100],
       child: Icon(Icons.add),),
 
@@ -464,7 +467,7 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               onPressed: () {
                 checkLocalTeams();
-                Navigator.pushNamed(context, '/offlinepage');
+                Get.toNamed('/offlinepage');
               },
               child: Text('Check Offline Teams'),
             ),

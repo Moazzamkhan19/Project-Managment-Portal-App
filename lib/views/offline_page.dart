@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:project_managment_fb/views/project_page.dart';
 import '../database/database.dart';
 import '../models/team_model.dart';
@@ -53,11 +55,11 @@ class _OfflinePageState extends State<OfflinePage> {
                   content: const Text("Are you sure you want to delete?"),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('No'),
+                      onPressed: () => Get.back(result: false),
+                       child: const Text('No'),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pop(context, true),
+                      onPressed: () => Get.back(result: false),
                       child: const Text('Yes'),
                     ),
                   ],
@@ -104,12 +106,13 @@ class _OfflinePageState extends State<OfflinePage> {
                   },
                 ),
                 onTap: () {
-                  Navigator.push(
+                  /*Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => ProjectPage(team: team),
                     ),
-                  );
+                  );*/
+                  Get.to(() => ProjectPage(team: team));
                 },
 
               ),)
@@ -129,11 +132,12 @@ class _OfflinePageState extends State<OfflinePage> {
           icon: Icon(Icons.home), // or Icons.arrow_back
           tooltip: 'Go to Home',
           onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(
+           /* Navigator.pushNamedAndRemoveUntil(
               context,
               '/home',
                   (Route<dynamic> route) => false, // removes all previous routes
-            );
+            );*/
+            Get.offAllNamed('/home');
           },
         ),
       ),

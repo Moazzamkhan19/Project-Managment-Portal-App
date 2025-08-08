@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:project_managment_fb/models/team_model.dart';
 import 'package:sqflite/sqflite.dart';
-class TeamServices {
+class TeamServices  {
   final teamcollection = FirebaseFirestore.instance.collection('teams');
-
   Future<List<Team>> getAllTeams() async
   {
     final snapshot = await teamcollection.get();

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:project_managment_fb/controllers/user_controller.dart';
 import 'package:project_managment_fb/views/AddTeam.dart';
+import 'package:project_managment_fb/views/TaskViewFB.dart';
 import 'package:project_managment_fb/views/offline_page.dart';
 import 'package:project_managment_fb/views/splash_page.dart';
 import 'views/login_page.dart';
@@ -73,6 +74,8 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/addTeam', page:()=> AddTeamPage()),
         GetPage(name: '/', page:()=> const SplashPage()),
         GetPage(name: '/offlinepage', page:()=> OfflinePage()),
+
+
       ],
     );
   }

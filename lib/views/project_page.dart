@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:project_managment_fb/collection/team_collection.dart';
 import 'package:project_managment_fb/views/OfflineTaskPage.dart';
 import 'package:project_managment_fb/views/Tasks_page.dart';
@@ -51,7 +53,6 @@ class _ProjectPageState extends State<ProjectPage> {
     }
     setState(() {}); // Trigger build()
   }
-
   Future<void> _fetchProjects() async {
     final projects = await DatabaseHelper().getProjectsByTeamId(
         widget.team.id);
@@ -81,7 +82,8 @@ class _ProjectPageState extends State<ProjectPage> {
       deadline = null;
       status = null;
 
-      Navigator.pop(context);
+      /*Navigator.pop(context);*/
+      Get.back();
       _fetchProjects();
       return true;
     }
@@ -114,16 +116,15 @@ class _ProjectPageState extends State<ProjectPage> {
       _startDate = null;
 
       setState(() {});
-      Navigator.pop(context);
-
+     /* Navigator.pop(context);*/
+      Get.back();
       return true;
     } catch (e) {
       print("Failed to add project: $e");
       return false;
     }
   }
-  Widget _buildFirebaseProjects()
-  {
+  Widget _buildFirebaseProjects() {
     return StreamBuilder(
       stream: ProjectServices().getProjectsByTeamId(widget.team.id),
       builder: (context, snapshot) {
@@ -167,11 +168,11 @@ class _ProjectPageState extends State<ProjectPage> {
                               "Are you sure you want to delete?"),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.pop(context, false),
+                              onPressed: () => Get.back(result: false),
                               child: const Text('No'),
                             ),
                             TextButton(
-                              onPressed: () => Navigator.pop(context, true),
+                              onPressed: () => Get.back(result:true),
                               child: const Text('Yes'),
                             ),
                           ],
@@ -263,11 +264,11 @@ class _ProjectPageState extends State<ProjectPage> {
                   content: const Text("Are you sure you want to delete?"),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context, false),
+                      onPressed: () => Get.back(result: false),
                       child: const Text('No'),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pop(context, true),
+                      onPressed: () => Get.back(result: true),
                       child: const Text('Yes'),
                     ),
                   ],
@@ -319,12 +320,13 @@ class _ProjectPageState extends State<ProjectPage> {
                   ? const Icon(Icons.remove_circle_outline, size: 20)
                   : const Icon(Icons.help_outline, size: 20),
               onTap: () {
-                Navigator.push(
+               /* Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => OfflineTaskPage(project: project),
                   ),
-                );
+                );*/
+                Get.to(()=> OfflineTaskPage(project: project));
               },
             ),
           ),
@@ -332,8 +334,6 @@ class _ProjectPageState extends State<ProjectPage> {
       },
     );
   }
-
-
   void _showAddDialog() {
     showDialog(
       context: context,
@@ -420,7 +420,7 @@ class _ProjectPageState extends State<ProjectPage> {
                   ],
                 ),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(context),
+                  TextButton(onPressed: () =>Get.back(),
                       child: const Text("Cancel")),
                  /* ElevatedButton(
                       onPressed: _addProject, child: const Text("Add")),
@@ -522,7 +522,7 @@ class _ProjectPageState extends State<ProjectPage> {
   Future<Team?> _showTeamSelectDialogFromSQLite() async {
     final teams = await DatabaseHelper().getAllTeams(); // From SQLite
 
-    // Filter out current team so you don't reassign to the same team
+    // Filter out current team so we don't reassign to the same team
     final availableTeams = teams.where((t) => t.id != widget.team.id).toList();
 
     if (availableTeams.isEmpty) {
@@ -553,7 +553,6 @@ class _ProjectPageState extends State<ProjectPage> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

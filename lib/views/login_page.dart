@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: () {
                         /*Navigator.pushNamed(context, '/sign_up');*/
-                        Get.toNamed('/sign_up');
+                        Get.toNamed('/signup');
                       },
                       child: const Text('Sign Up'),
                     ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:project_managment_fb/collection/Task_collection.dart';
 import 'package:project_managment_fb/models/project_model.dart';
@@ -7,12 +8,11 @@ import 'package:sqflite/sqflite.dart';
 
 import '../notification/notification.dart';
 
-class ProjectServices
+class ProjectServices extends GetxController
 {
   final project_collection = FirebaseFirestore.instance.collection('projects');// creating a collection named projects
   //adding projects
-  Future<void> addProject(Project project) async
-  {
+  Future<void> addProject(Project project) async {
     final doc = project_collection.doc();
     await doc.set(
       {
@@ -34,7 +34,6 @@ class ProjectServices
         .map((snapshot) =>
         snapshot.docs.map((doc) => Project.fromJson(doc.data() as Map<String, dynamic>, doc.id)).toList());
   }
-
  /* Future<void> deleteProject(String projectId) async {
     try {
       await project_collection.doc(projectId).delete();
@@ -78,7 +77,6 @@ class ProjectServices
       print("Error deleting project or tasks: $e");
     }
   }
-
   Future<void> deleteProjectsTeamId(String teamId) async {
     final snapshot = await project_collection.where('teamId', isEqualTo: teamId).get();
     for (final doc in snapshot.docs) {
@@ -128,9 +126,6 @@ class ProjectServices
       return false;
     }
   }
-
-
-
   Future<List<Project>> FetchProject() async {
     try {
       final snapshot = await FirebaseFirestore.instance.collection('projects').get();
@@ -146,8 +141,5 @@ class ProjectServices
       return [];
     }
   }
-
-
-
 
 }

@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:project_managment_fb/InternetServices/InternetServices.dart';
 import 'dart:convert';
@@ -26,32 +28,22 @@ class _AddTeamPageState extends State<AddTeamPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _designationController = TextEditingController();
-  File? _image;
-  final TeamController _teamController = TeamController();
+  /*File? _image;
+  final TeamController _teamController = TeamController();*/
+  final TeamController _teamController = Get.put(TeamController());
 
-  final ImagePicker _picker = ImagePicker();
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        _image = File(picked.path);
-      });
-    }
-  }
-  Future<void> _takePicture() async {
-    final picked = await _picker.pickImage(source: ImageSource.camera);
-    if (picked != null) {
-      setState(() {
-        _image = File(picked.path);
-      });
-    }
-  }
+ /* final ImagePicker _picker = ImagePicker();*/
+
   Future<bool> _saveTeam() async {
     if (_formKey.currentState!.validate()) {
       try {
         String base64Image = '';
-        if (_image != null) {
+        /* if (_image != null) {
           base64Image = await CompressAndConvert(_image!);
+        }*/
+        if (_teamController.pickImage.value != null) {
+          base64Image =
+          await CompressAndConvert(_teamController.pickImage.value!);
         }
 
         final team = Team(
@@ -80,13 +72,12 @@ class _AddTeamPageState extends State<AddTeamPage> {
     }
     return false;
   }
-  Future<bool> _saveTeamDB() async
-  {
+  Future<bool> _saveTeamDB() async {
     if (_formKey.currentState!.validate()) {
       try {
         String base64Image = '';
-        if (_image != null) {
-          base64Image = await CompressAndConvert(_image!);
+        if (_teamController.pickImage.value!=null) {
+          base64Image = await CompressAndConvert(_teamController.pickImage.value!);
         }
         var uuid = Uuid();
         String generatedId = uuid.v4();
@@ -111,8 +102,7 @@ class _AddTeamPageState extends State<AddTeamPage> {
     }
     return false;
   }
-  Future<String> CompressAndConvert(File imageFile)async
-  {
+  Future<String> CompressAndConvert(File imageFile)async {
     try
     {
       final bytes = await imageFile.readAsBytes();
@@ -151,29 +141,32 @@ class _AddTeamPageState extends State<AddTeamPage> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: _pickImage,
-                  child: _image == null
-                      ? CircleAvatar(
-                    radius: 50,
-                    child: Icon(Icons.add_a_photo, size: 30),
-                  )
-                      : CircleAvatar(
-                    radius: 50,
-                    backgroundImage: FileImage(_image!),
-                  ),
+                  onTap: _teamController.pickImage,
+                  child: Obx(() {
+                    return _teamController.pickImage.value == null
+                        ? CircleAvatar(
+                      radius: 50,
+                      child: Icon(Icons.add_a_photo, size: 30),
+                    )
+                        : CircleAvatar(
+                      radius: 50,
+                      backgroundImage: FileImage(_teamController.pickImage.value!),
+                    );
+                  }),
                 ),
+
                 SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton.icon(
-                      onPressed: _pickImage,
+                      onPressed: _teamController.pickImagemethod,
                       icon: Icon(Icons.photo_library),
                       label: Text("Pick from Gallery"),
                     ),
                     SizedBox(width: 10),
                     TextButton.icon(
-                      onPressed: _takePicture,
+                      onPressed: _teamController.takePicture,
                       icon: Icon(Icons.camera_alt),
                       label: Text("Take a Picture"),
                     ),
@@ -224,7 +217,9 @@ class _AddTeamPageState extends State<AddTeamPage> {
                         final isSuccess = await _saveTeam();
                         if (isSuccess && mounted) {
                           print("Navigating...");
-                          Navigator.pushReplacementNamed(context, '/home');
+                         /* Navigator.pushReplacementNamed(context, '/home');*/
+                          Get.toNamed('/home');
+
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Succesfully saved to Firebase 🔥',),
@@ -245,7 +240,8 @@ class _AddTeamPageState extends State<AddTeamPage> {
                         final Success = await _saveTeamDB();
                         if(Success && mounted)
                           {
-                            Navigator.pushReplacementNamed(context, '/home');
+                            /*Navigator.pushReplacementNamed(context, '/home');*/
+                            Get.toNamed('/home');
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Succesfully saved to SQL-LITE'),

@@ -15,7 +15,7 @@ class SignUp extends StatelessWidget {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
 
-  final UserController _userController = Get.find<UserController>();
+  final UserController _userController = Get.find<UserController>(); // GETX//
 
   @override
   Widget build(BuildContext context) {
