@@ -8,6 +8,7 @@ class Task {
   final int priority;
   final String projectid;
   final String teamId;
+  late final bool isCompleted;
 
   Task({
     required this.id,
@@ -17,6 +18,8 @@ class Task {
     required this.priority,
     required this.projectid,
     required this.teamId,
+    required this.isCompleted,
+
   });
 
   Map<String, dynamic> toMap({bool withId = true}) {
@@ -27,6 +30,7 @@ class Task {
       'priority': priority,
       'projectid': projectid,
       'teamId':teamId,
+      'isCompleted':isCompleted,
     };
     if (withId) map['id'] = id;
     return map;
@@ -48,7 +52,7 @@ class Task {
 
 
 
-  factory Task.fromMap(String id, Map<String, dynamic> data) {
+ /* factory Task.fromMap(String id, Map<String, dynamic> data) {
     return Task(
       id: data['id'],
       projectid: data['projectid'],
@@ -57,8 +61,23 @@ class Task {
       enddate: data['enddate'],
       priority: data['priority'],
       teamId: data['teamId'],
+      isCompleted: data['isCompleted']?? false,
     );
   }
+  */
+  factory Task.fromMap(String docId, Map<String, dynamic> data) {
+    return Task(
+      id: docId, // ✅ use the real Firestore doc ID
+      description: data['description'],
+      startdate: data['startdate'],
+      enddate: data['enddate'],
+      priority: data['priority'],
+      projectid: data['projectid'],
+      teamId: data['teamId'],
+      isCompleted: data['isCompleted'] ?? false,
+    );
+  }
+
 
 
   Map<String, dynamic> toFirebase() {
@@ -70,6 +89,7 @@ class Task {
       'priority': priority,
       'projectid': projectid,
       'teamId':teamId,
+      'isCompleted':isCompleted,
     };
   }
 
@@ -82,6 +102,7 @@ class Task {
       priority: data['priority'] ?? 0,
       projectid: data['projectid'] ?? 0,
       teamId: data['teamId']??'',
+      isCompleted: data['isCompleted']?? false,
     );
   }
 
@@ -94,6 +115,7 @@ class Task {
       priority: json['priority'] ?? 0,
       projectid: json['projectid'] ?? 0,
       teamId: json['teamId']??'',
+      isCompleted: json['isCompleted']?? false,
     );
   }
 
@@ -105,6 +127,7 @@ class Task {
       'priority': priority,
       'projectid': projectid,
       'teamId': teamId,
+      'isCompleted':isCompleted,
     };
   }
   factory Task.fromDocument(DocumentSnapshot doc) {
@@ -116,6 +139,7 @@ class Task {
       projectid: doc['projectid'],
       priority: doc['priority'],
       teamId: doc['teamId'],
+      isCompleted: doc['isCompleted']?? false,
     );
   }
   //for database
@@ -128,8 +152,7 @@ class Task {
       description: map['description'] ?? '',
       enddate: map['enddate'] ?? '',
       priority: map['priority'],
+      isCompleted: map['isCompleted']??false,
     );
   }
-
-
 }

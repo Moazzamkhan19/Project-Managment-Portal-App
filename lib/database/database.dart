@@ -59,6 +59,7 @@ CREATE TABLE project (
     priority INTEGER NOT NULL,
     projectid INTEGER NOT NULL,
     teamId TEXT NOT NULL,
+    isCompleted INTEGER NOT NULL,
     FOREIGN KEY (projectid) REFERENCES project(id)
   )
 ''');

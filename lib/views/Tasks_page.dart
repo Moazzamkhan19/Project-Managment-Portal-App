@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -49,6 +50,7 @@ class _TasksPageState extends State<TasksPage> {
       priority: priority,
       projectid: widget.project.id,
       teamId: widget.project.teamId,
+      isCompleted: false,
     );
 
     final success = await _taskcollection.addTaskOnPriority(task);
@@ -199,7 +201,7 @@ class _TasksPageState extends State<TasksPage> {
       ),
     );
   }
-  Widget buildTaskTile(Task task) {
+ /* Widget buildTaskTile(Task task) {
     Color iconColor;
     IconData iconData = Icons.circle;
 
@@ -247,7 +249,95 @@ class _TasksPageState extends State<TasksPage> {
         },
       ),
     );
-  }
+  }*/
+  Widget buildTaskTile(Task task) {
+    Color iconColor;
+    IconData iconData = Icons.circle;
 
+    // Set color based on priority
+    switch (task.priority) {
+      case 1:
+        iconColor = Colors.red;
+        break;
+      case 2:
+        iconColor = Colors.orange;
+        break;
+      case 3:
+        iconColor = Colors.green;
+        break;
+      default:
+        iconColor = Colors.grey;
+    }
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      child: ListTile(
+        title: Row(
+          children: [
+            Expanded(child: Text(task.description)),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.expand_more),
+              onSelected: (value) async {
+                bool newStatus = value == 'Completed';
+
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('projects')
+                      .doc(widget.project.id)
+                      .collection('tasks')
+                      .doc(task.id)
+                      .update({'isComplete': newStatus});
+
+                  setState(() {
+                    task.isCompleted = newStatus;
+                  });
+                    print('the value of the completion is ${task.isCompleted}');
+                } catch (e) {
+                  print('🔥 Error: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to update task')),
+                  );
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(
+                  value: 'Completed',
+                  child: Text('Mark as Completed'),
+                ),
+                PopupMenuItem(
+                  value: 'Not Completed',
+                  child: Text('Mark as Not Completed'),
+                ),
+              ],
+            ),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Start: ${task.startdate}'),
+            Text('End: ${task.enddate}'),
+            Text('Priority: ${task.priority}'),
+          ],
+        ),
+        trailing: Icon(
+          iconData,
+          color: iconColor,
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TaskviewFB(
+                taskId: task.id,
+                projectId: widget.project.id,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+  }
 
 }

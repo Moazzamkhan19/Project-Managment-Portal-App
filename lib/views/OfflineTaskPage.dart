@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:project_managment_fb/collection/Task_collection.dart';
 import 'package:project_managment_fb/controllers/Task_controller.dart';
+import 'package:project_managment_fb/database/database.dart';
 import 'package:uuid/uuid.dart';
 import '../models/project_model.dart';
 import 'package:project_managment_fb/models/Task.dart';
@@ -50,6 +51,7 @@ class _OfflineTaskPageState extends State<OfflineTaskPage> {
       priority: priority,
       projectid: widget.project.id,
       teamId: widget.project.teamId,
+      isCompleted: false,
     );
 
     final success = await _taskcontroller.addTask(task);
@@ -216,10 +218,33 @@ class _OfflineTaskPageState extends State<OfflineTaskPage> {
       default:
         iconColor = Colors.grey; // Fallback for unknown
     }
-    return Card(
+   /* return Card(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: ListTile(
         title: Text(task.description),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Start: ${task.startdate}'),
+            Text('End: ${task.enddate}'),
+            Text('Priority: ${task.priority}'),
+          ],
+        ),
+        trailing: Icon(
+          iconData,
+          color: iconColor,
+        ),
+      ),
+    );*/
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      child: ListTile(
+        title: Row(
+          children: [
+            Expanded(child: Text(task.description)),
+
+          ],
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -103,8 +103,6 @@ class TaskService {
     }
     return null;
   }
-
-
   Stream<QuerySnapshot> getTaskByProjectId(String projectId) {
     return task_collection
         .where('projectid', isEqualTo: projectId)
@@ -353,5 +351,13 @@ class TaskService {
       return [];
     }
   }
+  Future<void> updateTaskCompletion(String id, bool isCompleted) async {
+    await FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(id)
+        .update({'isCompleted': isCompleted});
+  }
+
+
 
 }
