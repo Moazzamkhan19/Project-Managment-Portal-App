@@ -133,9 +133,16 @@ class TaskService {
   }
 
   Future<void> addTaskHighprior(Task task) async {
-    final docRef = await FirebaseFirestore.instance
+   final docRef = await FirebaseFirestore.instance
         .collection('tasks')
         .add(task.toMap(withId: false));
+
+    /*final docRef = await FirebaseFirestore.instance
+        .collection('projects')
+        .doc(task.projectid.toString())
+        .collection('tasks')
+        .add(task.toMap(withId: false));*/
+
     final generatedId = docRef.id;
     await docRef.update({'id': generatedId});
 
@@ -169,6 +176,12 @@ class TaskService {
     final docRef = await FirebaseFirestore.instance
         .collection('tasks')
         .add(task.toMap(withId: false));
+    /*final docRef = await FirebaseFirestore.instance
+        .collection('projects')
+        .doc(task.projectid.toString()) // ensure it's String
+        .collection('tasks')
+        .add(task.toMap(withId: false));*/
+
 
     final generatedId = docRef.id;
     await docRef.update({'id': generatedId});
@@ -202,6 +215,13 @@ class TaskService {
     final docRef = await FirebaseFirestore.instance
         .collection('tasks')
         .add(task.toMap(withId: false));
+
+    /*final docRef = await FirebaseFirestore.instance
+        .collection('projects')
+        .doc(task.projectid.toString()) // ensure it's String
+        .collection('tasks')
+        .add(task.toMap(withId: false));*/
+
 
     final generatedId = docRef.id;
     await docRef.update({'id': generatedId});

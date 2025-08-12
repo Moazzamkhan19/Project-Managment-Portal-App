@@ -67,7 +67,7 @@ class Task {
   */
   factory Task.fromMap(String docId, Map<String, dynamic> data) {
     return Task(
-      id: docId, // ✅ use the real Firestore doc ID
+      id: docId,
       description: data['description'],
       startdate: data['startdate'],
       enddate: data['enddate'],
@@ -93,16 +93,30 @@ class Task {
     };
   }
 
-  factory Task.fromFirestore(Map<String, dynamic> data, String docId) {
+ /*factory Task.fromFirestore(Map<String, dynamic> data, String docId) {
     return Task(
       id: docId,
       description: data['description'] ?? '',
       startdate: data['startdate'] ?? '',
       enddate: data['enddate'] ?? '',
       priority: data['priority'] ?? 0,
-      projectid: data['projectid'] ?? 0,
+      projectid: data['projectid']?.toString() ?? '',
       teamId: data['teamId']??'',
       isCompleted: data['isCompleted']?? false,
+    );
+  }*/
+  factory Task.fromFirestore(Map<String, dynamic> data, String docId) {
+    return Task(
+      id: docId,
+      description: data['description']?.toString() ?? '',
+      startdate: data['startdate']?.toString() ?? '',
+      enddate: data['enddate']?.toString() ?? '',
+      priority: data['priority'] is int
+          ? data['priority']
+          : int.tryParse(data['priority']?.toString() ?? '0') ?? 0,
+      projectid: data['projectid']?.toString() ?? '',
+      teamId: data['teamId']?.toString() ?? '',
+      isCompleted: data['isCompleted'] ?? false,
     );
   }
 
@@ -156,3 +170,5 @@ class Task {
     );
   }
 }
+
+

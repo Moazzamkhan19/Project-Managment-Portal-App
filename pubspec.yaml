@@ -49,13 +49,14 @@ dependencies:
   connectivity_plus: ^6.1.4
   uuid: ^4.5.1
   get: ^4.7.2
+  fl_chart: ^1.0.0
 
 
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/app_icon.png"
+  image_path: "assets/images/app_icon.png"
 
 dev_dependencies:
   flutter_test:

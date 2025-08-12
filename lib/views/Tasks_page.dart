@@ -50,7 +50,7 @@ class _TasksPageState extends State<TasksPage> {
       priority: priority,
       projectid: widget.project.id,
       teamId: widget.project.teamId,
-      isCompleted: false,
+      isCompleted: true,
     );
 
     final success = await _taskcollection.addTaskOnPriority(task);
@@ -279,24 +279,20 @@ class _TasksPageState extends State<TasksPage> {
               icon: const Icon(Icons.expand_more),
               onSelected: (value) async {
                 bool newStatus = value == 'Completed';
+                  try
 
-                try {
-                  await FirebaseFirestore.instance
-                      .collection('projects')
-                      .doc(widget.project.id)
-                      .collection('tasks')
-                      .doc(task.id)
-                      .update({'isComplete': newStatus});
-
-                  setState(() {
-                    task.isCompleted = newStatus;
-                  });
-                    print('the value of the completion is ${task.isCompleted}');
-                } catch (e) {
+                  {
+                    await FirebaseFirestore.instance
+                        .collection('tasks')
+                        .doc(task.id)
+                        .update({'isCompleted': newStatus});
+                    setState(() {
+                      task.isCompleted = newStatus;
+                    });
+                  print('the value of the completion is ${task.isCompleted}');
+                  }
+                  catch (e) {
                   print('🔥 Error: $e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to update task')),
-                  );
                 }
               },
               itemBuilder: (context) => const [
@@ -315,9 +311,9 @@ class _TasksPageState extends State<TasksPage> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Start: ${task.startdate}'),
-            Text('End: ${task.enddate}'),
+            Text('Due Date: ${task.enddate}'),
             Text('Priority: ${task.priority}'),
+            Text('Status: ${task.isCompleted ? 'Completed' : 'Incomplete'}'),
           ],
         ),
         trailing: Icon(

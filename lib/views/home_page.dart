@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:project_managment_fb/collection/Charts/Charts.dart';
 import 'package:project_managment_fb/collection/Task_collection.dart';
 import 'package:project_managment_fb/collection/project_collection.dart';
 import 'package:project_managment_fb/collection/team_collection.dart';
@@ -28,17 +29,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Task> tasksList = [];
   bool isOnline = false;
   late Project project;
   late Task task;
   List<Team> _teamList = [];
-  Future<void>_logout(BuildContext context) async
-  {
+  final TaskService _taskcontroller = TaskService();
+  final Charts chartscontroller = Charts();
+
+
+  Future<void>_logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false);
     /*Navigator.pushReplacementNamed(context,'/login');*/
     Get.offNamed('/login');
   }
+  Future<void> fetchTasksFromFirestore() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('tasks').get();
+      tasksList = snapshot.docs.map((doc) {
+        return Task.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+      }).toList();
+      for (var task in tasksList) {
+        print('ID: ${task.id}, Description: ${task.description}, Completed: ${task.isCompleted}');
+      }
+      setState(() {});
+    } catch (e) {
+      print('Error fetching tasks: $e');
+    }
+  }
+
   get flutterLocalNotificationsPlugin => null;
   @override
  /* void initState()
@@ -194,7 +214,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _checkConnectivity();
-     fetchTeam(); // Loads Firestore teams
+     fetchTeam();
+     fetchTasksFromFirestore();// Loads Firestore teams
   }
   void fetchTeam() async {
     TeamServices service = TeamServices();
@@ -209,7 +230,7 @@ class _HomePageState extends State<HomePage> {
       isOnline = connectivityResult != ConnectivityResult.none;
     });
   }
-  Widget buildOnlineListView() {
+  /* Widget buildOnlineListView() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('teams')
@@ -225,12 +246,23 @@ class _HomePageState extends State<HomePage> {
         }
 
         final docs = snapshot.data!.docs;
+       /*tasksList.clear();
+        for (var doc in docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          try {
+            final task = Task.fromFirestore(data, doc.id);
+            tasksList.add(task);
+          } catch (e, stack) {
+            print("error");
+          }
+        }*/
 
         return ListView.builder(
           itemCount: docs.length,
           itemBuilder: (context, index) {
             final doc = docs[index];
             final team = Team.fromMap(doc.data() as Map<String, dynamic>);
+
 
             return Dismissible(
               key: Key(team.id),
@@ -279,7 +311,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                child: ListTile(
+               /* child: ListTile(
                   leading: CircleAvatar(
                     backgroundImage: team.image.isNotEmpty
                         ? MemoryImage(base64Decode(team.image))
@@ -288,25 +320,11 @@ class _HomePageState extends State<HomePage> {
                   ),
                   title: Text('${team.name}\n${team.designation}'),
                   trailing: IconButton(
-                    icon: const Icon(Icons.info_outline),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (_) => Container(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Email: ${team.email}"),
-                              Text("Phone: ${team.phone}"),
-                              Text("Designation: ${team.designation}"),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                    icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                      onPressed: ()
+                      {
+                      },
+                      ),
                   onTap: () {
                    /* Navigator.push(
                       context,
@@ -316,6 +334,45 @@ class _HomePageState extends State<HomePage> {
                     );*/
                     Get.to(() => ProjectPage(team: team));
                   },
+                 ),*/
+                child: ExpansionTile(
+                  leading: CircleAvatar(
+                    backgroundImage: team.image.isNotEmpty
+                        ? MemoryImage(base64Decode(team.image))
+                        : null,
+                    child: team.image.isEmpty ? const Icon(Icons.person) : null,
+                  ),
+                  title: GestureDetector(
+                    onTap: () {
+                      Get.to(() => ProjectPage(team: team));
+                    },
+                    child: Text('${team.name}\n${team.designation}'),
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 50),
+
+                          Builder(
+                            builder: (context) {
+                              List<Task> filteredTasks = tasksList
+                                  .where((task) => task.teamId == team.id)
+                                  .toList();
+
+                              return SizedBox(
+                                height: 200,
+                                child: Charts().createPieChartForTasks(filteredTasks),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 50),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -323,7 +380,7 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-  }
+  }*/
   /* Future<void> _loadTeams() async {
     final hasConnection = await InternetServices.checkInternetAccess();
 
@@ -355,6 +412,147 @@ class _HomePageState extends State<HomePage> {
   }
 
   */
+  Widget buildOnlineListView() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('teams')
+          .orderBy('addedAt', descending: true)
+          .snapshots(),
+      builder: (context, teamSnapshot) {
+        if (teamSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!teamSnapshot.hasData || teamSnapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No team members added.'));
+        }
+
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
+          builder: (context, taskSnapshot) {
+            if (taskSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (!taskSnapshot.hasData) {
+              return const Center(child: Text('No tasks available.'));
+            }
+
+            // Convert Firestore task docs into Task objects
+            List<Task> allTasks = taskSnapshot.data!.docs.map((doc) {
+              return Task.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+            }).toList();
+
+            final teamDocs = teamSnapshot.data!.docs;
+
+            return ListView.builder(
+              itemCount: teamDocs.length,
+              itemBuilder: (context, index) {
+                final doc = teamDocs[index];
+                final team = Team.fromMap(doc.data() as Map<String, dynamic>);
+
+                // Filter tasks for this team
+                List<Task> filteredTasks = allTasks
+                    .where((task) => task.teamId == team.id)
+                    .toList();
+
+                return Dismissible(
+                  key: Key(team.id),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.redAccent,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  confirmDismiss: (direction) async {
+                    return await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Delete Member'),
+                        content: const Text("Are you sure you want to delete?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Get.back(result: false),
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () => Get.back(result: true),
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  onDismissed: (direction) async {
+                    await deleteTeam(team.id);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[250],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                child: ExpansionTile(
+                        leading: CircleAvatar(
+                          backgroundImage: team.image.isNotEmpty
+                              ? MemoryImage(base64Decode(team.image))
+                              : null,
+                          child: team.image.isEmpty ? const Icon(Icons.person) : null,
+                        ),
+                        title: GestureDetector(
+                          onTap: () {
+                            Get.to(() => ProjectPage(team: team));
+                          },
+                          child: Text('${team.name}\n${team.designation}'),
+                        ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                bool isNarrow = constraints.maxWidth < 500; // Mobile check
+
+                                if (isNarrow) {
+                                  // Stack vertically on small screens
+                                  return Column(
+                                    children: [
+                                      Charts().createPieChartForTasks(filteredTasks),
+                                      Charts().createLineChart(),
+                                    ],
+                                  );
+                                } else {
+                                  // Place side-by-side on wider screens
+                                  return Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(child: Charts().createPieChartForTasks(filteredTasks)),
+                                      Expanded(child: Charts().createLineChart()),
+                                    ],
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> deleteTeam(String docId) async {
     final prefs = await SharedPreferences.getInstance();
 
