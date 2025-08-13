@@ -519,6 +519,12 @@ class _HomePageState extends State<HomePage> {
                               builder: (context, constraints) {
                                 bool isNarrow = constraints.maxWidth < 500; // Mobile check
 
+                                if (filteredTasks.isEmpty) {
+                                  return const Center(
+                                    child: Text("No tasks available for this team"),
+                                  );
+                                }
+
                                 if (isNarrow) {
                                   // Stack vertically on small screens
                                   return Row(
