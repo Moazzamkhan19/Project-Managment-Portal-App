@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project_managment_fb/views/sign_up.dart';
 import '../controllers/user_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
@@ -127,7 +128,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: () {
                         /*Navigator.pushNamed(context, '/sign_up');*/
-                        Get.toNamed('/signup');
+                        Get.to(
+                              () => SignUp(), // Replace with your signup page widget
+                          transition: Transition.native,
+                          duration: const Duration(milliseconds: 800),
+                        );
                       },
                       child: const Text('Sign Up'),
                     ),

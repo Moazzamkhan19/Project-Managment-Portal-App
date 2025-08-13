@@ -18,11 +18,11 @@ class Charts {
     double lowPercent = total == 0 ? 0 : (lowCompleted / total * 100);
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 4,
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.all(4),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -31,35 +31,43 @@ class Charts {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            SizedBox(
-              height: 120,
-              child: PieChart(
-                PieChartData(
-                  sections: [
-                    PieChartSectionData(
-                      value: highCompleted.toDouble(),
-                      title: '',
-                      color: Colors.red,
-                    ),
-                    PieChartSectionData(
-                      value: mediumCompleted.toDouble(),
-                      title: '',
-                      color: Colors.orange,
-                    ),
-                    PieChartSectionData(
-                      value: lowCompleted.toDouble(),
-                      title: '',
-                      color: Colors.green,
-                    ),
-                  ],
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 30,
+            Container(
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: 80,
+                height: 80,
+                child: PieChart(
+                  PieChartData(
+                    sections: [
+                      PieChartSectionData(
+                        value: highCompleted.toDouble(),
+                        title: '',
+                        color: Colors.red,
+                        radius: 25, // shrink slice radius
+                      ),
+                      PieChartSectionData(
+                        value: mediumCompleted.toDouble(),
+                        title: '',
+                        color: Colors.orange,
+                        radius: 25,
+                      ),
+                      PieChartSectionData(
+                        value: lowCompleted.toDouble(),
+                        title: '',
+                        color: Colors.green,
+                        radius: 25,
+                      ),
+                    ],
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 12, // smaller donut hole
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+
+            const SizedBox(height: 5),
             // Percentages directly below chart
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildLegendItem(Colors.red, "High", highPercent),
@@ -74,48 +82,55 @@ class Charts {
   }
 
   Widget createLineChart() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 4,
-      margin: const EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Progress Over Time",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 150,
-              child: LineChart(
-                LineChartData(
-                  titlesData: FlTitlesData(show: false),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: [
-                        FlSpot(0, 1),
-                        FlSpot(1, 3),
-                        FlSpot(2, 2.5),
-                        FlSpot(3, 4),
-                        FlSpot(4, 3.5),
-                      ],
-                      isCurved: true,
-                      color: Colors.blue,
-                      dotData: FlDotData(show: false),
-                    ),
-                  ],
+    return Expanded(
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        elevation: 2,
+        margin: const EdgeInsets.all(4),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Progress Over Time",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              SizedBox(
+                height: 80,
+                width: 80,
+                child: LineChart(
+                  LineChartData(
+                    titlesData: FlTitlesData(show: false),
+                    borderData: FlBorderData(show: false),
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: [
+                          FlSpot(0, 1),
+                          FlSpot(1, 3),
+                          FlSpot(2, 2.5),
+                          FlSpot(3, 4),
+                          FlSpot(4, 3.5),
+                        ],
+                        isCurved: true,
+                        color: Colors.blue,
+                        dotData: FlDotData(show: false),
+                        barWidth: 2,
+                      ),
+                    ],
+                    gridData: FlGridData(show: false),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+
+
 
   Widget _buildLegendItem(Color color, String label, double percent) {
     return Padding(

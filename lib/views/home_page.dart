@@ -521,7 +521,7 @@ class _HomePageState extends State<HomePage> {
 
                                 if (isNarrow) {
                                   // Stack vertically on small screens
-                                  return Column(
+                                  return Row(
                                     children: [
                                       Charts().createPieChartForTasks(filteredTasks),
                                       Charts().createLineChart(),
