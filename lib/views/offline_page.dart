@@ -125,6 +125,10 @@ class _OfflinePageState extends State<OfflinePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
         title: const Text('Offline Saved Team'),
         centerTitle: true,
         backgroundColor: Colors.purple[100],

@@ -46,8 +46,13 @@ class TaskviewFB extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
+            toolbarHeight: 80,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
             title: const Text("Task Details"),
             backgroundColor: Colors.purple[100],
+            centerTitle: true,
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),

@@ -130,8 +130,13 @@ class _AddTeamPageState extends State<AddTeamPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
+
         title: Text("Add Team Member"),
-        backgroundColor: Colors.purple[100],
+        backgroundColor: Colors.purple[100],centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

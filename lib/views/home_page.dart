@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:project_managment_fb/collection/Charts/Charts.dart';
@@ -558,6 +559,24 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+  Stream<Map<String, dynamic>> weatherStream() async* {
+    while (true) {
+      try {
+        final response = await http.get(Uri.parse(
+          "https://api.openweathermap.org/data/2.5/weather?q=Lahore,PK&appid=b5f1e3451d32d8101700e4bca8377ed1&units=metric",
+        ));
+
+        if (response.statusCode == 200) {
+          yield jsonDecode(response.body);
+        }
+      } catch (e) {
+        yield {"error": e.toString()};
+      }
+
+      // refresh every 5 minutes
+      await Future.delayed(const Duration(minutes: 5));
+    }
+  }
 
   Future<void> deleteTeam(String docId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -604,8 +623,10 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.purple[100],
       child: Icon(Icons.add),),
 
-      appBar: AppBar(
-        title: const Text('DASH BOARD'),
+    /*  appBar: AppBar(
+        toolbarHeight: 70,
+        shape: const  RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
+        title: const Text('DASH'),
         centerTitle: true,
         backgroundColor: Colors.purple[100],
         leading: IconButton(
@@ -649,19 +670,159 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         actions: [
-          TextButton(
+          StreamBuilder<Map<String, dynamic>>(
+            stream: weatherStream(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError || (snapshot.data?['error'] != null)) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Icon(Icons.error, color: Colors.red),
+                );
+              } else if (snapshot.hasData) {
+                final data = snapshot.data!;
+                final temp = data["main"]["temp"];
+                final condition = data["weather"][0]["main"];
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${temp.toStringAsFixed(0)}°C ",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Text(
+                        condition,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+            },
+          ),
+          IconButton(
             onPressed: () async {
               await _logout(context);
             },
-            child: const Text(
-              'LOG OUT',
-              style: TextStyle(color: Colors.white),
-            ),
+            icon: const Icon(Icons.logout, color: Colors.black),
           ),
         ],
-      ),
+      ),*/
+        appBar: AppBar(
+          toolbarHeight: 80,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.purple[100],
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'DASH',
+                style: TextStyle(
+                  fontSize: 22,
+                ),
+              ),
+              const SizedBox(height: 4),
+              StreamBuilder<Map<String, dynamic>>(
+                stream: weatherStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    );
+                  } else if (snapshot.hasError || (snapshot.data?['error'] != null)) {
+                    return const Text(
+                      "⚠ Weather unavailable",
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    );
+                  } else if (snapshot.hasData) {
+                    final data = snapshot.data!;
+                    final temp = data["main"]["temp"];
+                    final condition = data["weather"][0]["main"];
+                    return Text(
+                      "${temp.toStringAsFixed(0)}°C • $condition",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              ),
+            ],
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.sync),
+            tooltip: 'Sync Offline Data',
+            onPressed: () async {
+              try {
+                bool teamsync = await TeamServices().SYNCTeam();
+                bool projectsync = await ProjectServices().SYNCProject();
+                bool tasksync = await TaskService().SYNCTask();
 
-      body: Padding(
+                if (teamsync && projectsync && tasksync) {
+                  await TeamServices().FetchTeams();
+                  await ProjectServices().FetchProject();
+                  await TaskService().FetchTasks();
+
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    setState(() {});
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("✅ Data synced and local database cleared."),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("❌ Sync failed. Try again.")),
+                  );
+                }
+              } catch (e) {
+                print("❌ Sync error: $e");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("❌ An error occurred during sync."),
+                  ),
+                );
+              }
+            },
+          ),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await _logout(context);
+              },
+              icon: const Icon(Icons.logout, color: Colors.black),
+            ),
+          ],
+        ),
+
+        body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [

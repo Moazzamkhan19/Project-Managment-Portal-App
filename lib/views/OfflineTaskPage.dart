@@ -170,8 +170,12 @@ class _OfflineTaskPageState extends State<OfflineTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
         title: Text('Tasks of ${widget.project.title}'),
-        backgroundColor: Colors.purple[100],
+        backgroundColor: Colors.purple[100],centerTitle: true,
       ),
       body: FutureBuilder<List<Task>>(
         future: _taskcontroller.getTasksByProjectId(widget.project.id),

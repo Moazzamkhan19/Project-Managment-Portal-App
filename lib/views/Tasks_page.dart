@@ -169,8 +169,13 @@ class _TasksPageState extends State<TasksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
         title: Text('Tasks of ${widget.project.title}'),
         backgroundColor: Colors.purple[100],
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _taskcollection.getTaskByProjectId(widget.project.id),

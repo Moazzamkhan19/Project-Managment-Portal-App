@@ -557,8 +557,12 @@ class _ProjectPageState extends State<ProjectPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
         title: Text("Projects of ${widget.team.name}"),
-        backgroundColor: Colors.purple[100],),
+        backgroundColor: Colors.purple[100],centerTitle: true,),
       body: _isOnline
           ? _buildFirebaseProjects()
           : _buildSQLiteProjects(),
