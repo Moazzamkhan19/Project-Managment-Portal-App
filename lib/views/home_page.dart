@@ -622,7 +622,6 @@ class _HomePageState extends State<HomePage> {
        },
       backgroundColor: Colors.purple[100],
       child: Icon(Icons.add),),
-
     /*  appBar: AppBar(
         toolbarHeight: 70,
         shape: const  RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
