@@ -491,8 +491,8 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.grey[250],
-                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.grey[150],
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.2),
@@ -559,6 +559,51 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+ /* Stream<Map<String, dynamic>> weatherStream() async* {
+    while (true) {
+      try {
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          yield {"error": "Location services are disabled"};
+          continue;
+        }
+
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            yield {"error": "Location permissions are denied"};
+            continue;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          yield {"error": "Location permissions are permanently denied"};
+          continue;
+        }
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+
+        double lat = position.latitude;
+        double lon = position.longitude;
+        final response = await http.get(
+          Uri.parse(
+            "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=b5f1e3451d32d8101700e4bca8377ed1&units=metric",
+          ),
+        );
+
+        if (response.statusCode == 200) {
+          yield jsonDecode(response.body);
+        } else {
+          yield {"error": "Failed to fetch weather"};
+        }
+      } catch (e) {
+        yield {"error": e.toString()};
+      }
+      await Future.delayed(const Duration(minutes: 5));
+    }
+  }*/
   Stream<Map<String, dynamic>> weatherStream() async* {
     while (true) {
       try {
@@ -572,12 +617,9 @@ class _HomePageState extends State<HomePage> {
       } catch (e) {
         yield {"error": e.toString()};
       }
-
-      // refresh every 5 minutes
       await Future.delayed(const Duration(minutes: 5));
     }
   }
-
   Future<void> deleteTeam(String docId) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -621,7 +663,7 @@ class _HomePageState extends State<HomePage> {
          Get.toNamed('/addTeam');
        },
       backgroundColor: Colors.purple[100],
-      child: Icon(Icons.add),),
+      child: Icon(Icons.add_circle),),
     /*  appBar: AppBar(
         toolbarHeight: 70,
         shape: const  RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
@@ -759,12 +801,41 @@ class _HomePageState extends State<HomePage> {
                     final data = snapshot.data!;
                     final temp = data["main"]["temp"];
                     final condition = data["weather"][0]["main"];
-                    return Text(
-                      "${temp.toStringAsFixed(0)}°C • $condition",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
+                    IconData weatherIcon;
+                    switch(condition.toLowerCase())
+                    {
+                      case "clouds":
+                            weatherIcon=Icons.cloud;
+                            break;
+                      case 'rain':
+                            weatherIcon=Icons.beach_access;
+                            break;                // umbrella icon
+                      case "sunny":
+                            weatherIcon=Icons.wb_sunny;
+                            break;
+                      case "snow":
+                            weatherIcon=Icons.ac_unit;
+                            break;
+                      default:
+                            weatherIcon=Icons.thermostat;
+                    }
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          weatherIcon,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          "${temp.toStringAsFixed(0)}°C • $condition",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     );
                   } else {
                     return const SizedBox.shrink();
@@ -839,8 +910,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-
-
     );
   }
   void checkLocalTeams() async {
