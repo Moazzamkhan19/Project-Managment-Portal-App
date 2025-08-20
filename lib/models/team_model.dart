@@ -1,3 +1,5 @@
+import '../Encryption/EncryptionServices.dart';
+
 class Team {
   final String id;
   final String name;
@@ -29,10 +31,10 @@ class Team {
   */
   factory Team.fromMap(Map<String, dynamic> map) {
     return Team(
-      id: map['id'].toString(), // ✅ Fix here
+      id: map['id'].toString(),
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      phone: map['phone'] ?? '',
+      phone: EncryptionHelper.decryptData(map['phone']),
       designation: map['designation'] ?? '',
       image: map['image'] ?? '',
     );
@@ -42,7 +44,7 @@ class Team {
       'id': id,  // include id here
       'name': name,
       'email': email,
-      'phone': phone,
+      'phone': EncryptionHelper.encryptdata(phone),
       'designation': designation,
       'image': image,
     };
@@ -55,7 +57,7 @@ class Team {
       'id': id,
       'name': name,
       'email': email,
-      'phone': phone,
+      'phone': EncryptionHelper.encryptdata(phone),
       'designation': designation,
       'image': image,
     };

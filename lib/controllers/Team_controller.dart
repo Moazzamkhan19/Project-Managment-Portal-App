@@ -25,7 +25,6 @@ class TeamController extends GetxController {
     final docRef = await _firestore.collection('teams').add(team.toMap());
     final newTeam = team.copyWith(id: docRef.id);
     teams.add(newTeam); //RX list
-
     /*_teams.add(newTeam);
     notifyListeners();*/
   }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:project_managment_fb/Encryption/EncryptionServices.dart';
 import '../controllers/user_controller.dart';
 import '../models/user_model.dart' as app_model;
 
@@ -129,7 +130,7 @@ class SignUp extends StatelessWidget {
                         .set({
                       'firstName': newUser.firstName,
                       'lastName': newUser.lastName,
-                      'phoneNumber': newUser.phoneNumber,
+                      'phoneNumber': EncryptionHelper.encryptdata(newUser.phoneNumber),  //Encrypting data here
                       'username': newUser.username,
                       'email': newUser.email,
                     });

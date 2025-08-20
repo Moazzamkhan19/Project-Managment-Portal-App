@@ -434,7 +434,7 @@ class _ProjectPageState extends State<ProjectPage> {
                         final  bool isSuccess = await _addProject();
                         if (isSuccess && mounted) {
                           print("Navigating...");
-                          Navigator.pop(context);
+                          Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Succesfully saved to Firebase 🔥',),
@@ -455,7 +455,7 @@ class _ProjectPageState extends State<ProjectPage> {
                         final bool  Success = await _addProjectDB();
                         if(Success && mounted)
                         {
-                          Navigator.pop(context);
+                          Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Succesfully saved to SQL-LITE'),

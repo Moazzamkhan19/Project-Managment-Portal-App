@@ -32,8 +32,8 @@ class _AddTeamPageState extends State<AddTeamPage> {
   final TeamController _teamController = TeamController();*/
   final TeamController _teamController = Get.put(TeamController());
 
- /* final ImagePicker _picker = ImagePicker();*/
 
+  /* final ImagePicker _picker = ImagePicker();*/
   Future<bool> _saveTeam() async {
     if (_formKey.currentState!.validate()) {
       try {
